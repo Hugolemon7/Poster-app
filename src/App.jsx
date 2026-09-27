@@ -9,7 +9,6 @@ export default function App() {
   const canvasRef = useRef(null);
   const originalImageRef = useRef(null);
 
-  // Carga de la imagen
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -26,7 +25,6 @@ export default function App() {
     }
   };
 
-  // Procesamiento en tiempo real sobre el Canvas
   useEffect(() => {
     if (!originalImageRef.current || !canvasRef.current) return;
 
@@ -34,14 +32,11 @@ export default function App() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Mantiene la resolución original de la imagen cargada
     canvas.width = img.width;
     canvas.height = img.height;
 
-    // Dibujar la imagen original
     ctx.drawImage(img, 0, 0);
 
-    // Obtener array de píxeles
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
@@ -53,25 +48,19 @@ export default function App() {
       let g = data[i + 1];
       let b = data[i + 2];
 
-      // 1. Escala de grises por luminancia relativa
       let gray = 0.299 * r + 0.587 * g + 0.114 * b;
-
-      // 2. Ajuste de brillo (-100 a +100)
       gray = Math.min(255, Math.max(0, gray + brightness));
 
-      // 3. Cuantización a N niveles de posterización
       const posterizedGray = Math.round(gray / step) * step;
 
-      data[i] = posterizedGray;     // R
-      data[i + 1] = posterizedGray; // G
-      data[i + 2] = posterizedGray; // B
+      data[i] = posterizedGray;
+      data[i + 1] = posterizedGray;
+      data[i + 2] = posterizedGray;
     }
 
-    // Dibujar el resultado procesado
     ctx.putImageData(imageData, 0, 0);
   }, [imageSrc, levels, brightness]);
 
-  // Exportar manteniendo la resolución exacta original
   const handleDownload = () => {
     if (!canvasRef.current) return;
 
@@ -86,15 +75,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-100 flex flex-col font-sans">
-      {/* Header */}
       <header className="p-5 border-b border-neutral-800 flex justify-between items-center">
         <h1 className="text-xl font-bold tracking-wider uppercase">Poster Shine</h1>
         <span className="text-xs text-neutral-400">Grayscale Posterizer</span>
       </header>
 
-      {/* Área Principal */}
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Previsualización */}
         <div className="flex-1 p-6 flex items-center justify-center bg-neutral-950 overflow-auto">
           {!imageSrc ? (
             <label className="flex flex-col items-center justify-center w-full max-w-lg h-64 border-2 border-dashed border-neutral-700 rounded-xl cursor-pointer hover:border-neutral-500 transition-colors bg-neutral-900/50">
@@ -112,12 +98,10 @@ export default function App() {
           )}
         </div>
 
-        {/* Panel lateral de controles */}
         {imageSrc && (
           <aside className="w-full md:w-80 p-6 bg-neutral-900 border-t md:border-t-0 md:border-l border-neutral-800 flex flex-col gap-6">
             <h2 className="text-sm font-semibold tracking-wider text-neutral-400 uppercase">Ajustes</h2>
 
-            {/* Slider de Niveles */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between text-sm">
                 <span>Niveles de tono</span>
@@ -133,7 +117,6 @@ export default function App() {
               />
             </div>
 
-            {/* Slider de Brillo */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between text-sm">
                 <span>Brillo</span>
@@ -149,7 +132,6 @@ export default function App() {
               />
             </div>
 
-            {/* Formato de descarga */}
             <div className="flex flex-col gap-2">
               <span className="text-sm text-neutral-300">Formato de descarga</span>
               <div className="flex gap-2">
@@ -176,7 +158,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Botón Descargar */}
             <button
               onClick={handleDownload}
               className="mt-auto w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-200 transition-colors shadow-lg text-sm"
@@ -184,7 +165,6 @@ export default function App() {
               Descargar Imagen
             </button>
 
-            {/* Cambiar imagen */}
             <label className="text-center text-xs text-neutral-400 hover:text-white cursor-pointer transition-colors">
               Cambiar imagen
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
